@@ -58,6 +58,16 @@ src/
 Server-side validation is the source of truth: forms do light client-side checks (required/min/max attrs) and map
 `errors[].field` back onto inputs (`is-invalid` + `invalid-feedback`).
 
+## Progress
+- [x] 1 Git bootstrap (local; push blocked: Claude GitHub App has no access to the repo yet)
+- [x] 2 Scaffold · [x] 3 Bootstrap SCSS · [x] 4 API layer · [x] 5–7 Features + tests (31 tests)
+- [x] 8 Docker (image built, nginx SPA fallback and `/api` proxy checked against the real API)
+- [x] 9 CI workflow · [x] 10 README
+- [x] E2E scenario run with Playwright against the real API (players, board game, tournament, waitlist, promotion, 400/409/404)
+
+Notes: TypeScript pinned to 6.0.x (typescript-eslint does not support TS 7 yet). MSW 3 renamed
+`onUnhandledRequest` to `onUnhandledFrame`.
+
 ## Steps
 1. **Git bootstrap**: initial commit (README stub, `.gitignore`, `PLAN.md`). Push `develop` first (GitHub makes the first pushed
    branch the default), then push `master` from the same commit. Create `claude/sweet-goodall-twda8e` from `develop` for the work.
