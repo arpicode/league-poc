@@ -9,20 +9,21 @@ import {
   type LoaderFunctionArgs,
 } from 'react-router';
 import { boardGamesApi } from '../../api/boardGames';
+import { fetchAll } from '../../api/client';
 import { tournamentsApi } from '../../api/tournaments';
 import { TOURNAMENT_STATUSES, type TournamentCreateRequest, type TournamentStatus } from '../../api/types';
 import { FormField } from '../../components/FormField';
 import { PageHeader } from '../../components/PageHeader';
 import { ProblemAlert } from '../../components/ProblemAlert';
-import { ALL, fieldError, idParam, numberOrNull, text, textOrNull, toActionResult } from '../../lib/forms';
+import { fieldError, idParam, numberOrNull, text, textOrNull, toActionResult } from '../../lib/forms';
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const [tournament, boardGames] = await Promise.all([
     params.id ? tournamentsApi.get(idParam(params.id), request.signal) : null,
-    boardGamesApi.list(ALL, request.signal),
+    fetchAll((query) => boardGamesApi.list(query, request.signal)),
   ]);
 
-  return { tournament, boardGames: boardGames.content };
+  return { tournament, boardGames };
 }
 
 export async function action({ params, request }: ActionFunctionArgs) {
@@ -69,7 +70,7 @@ export default function TournamentFormPage() {
           A tournament needs a board game: <Link to="/boardgames/new">create one first</Link>.
         </div>
       )}
-      <Form method="post" className="col-lg-6" noValidate>
+      <Form key={tournament?.id ?? 'new'} method="post" className="col-lg-6" noValidate>
         {tournament && <input type="hidden" name="status" value={tournament.status} />}
         {boardGameLocked && <input type="hidden" name="boardGameId" value={tournament.boardGame.id} />}
         <FormField

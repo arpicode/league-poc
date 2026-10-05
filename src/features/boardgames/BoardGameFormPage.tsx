@@ -50,7 +50,7 @@ export default function BoardGameFormPage() {
     <>
       <PageHeader title={game ? `Edit ${game.name}` : 'New board game'} />
       <ProblemAlert problem={problem} />
-      <Form method="post" className="col-lg-6" noValidate>
+      <Form key={game?.id ?? 'new'} method="post" className="col-lg-6" noValidate>
         <FormField
           label="Name"
           name="name"

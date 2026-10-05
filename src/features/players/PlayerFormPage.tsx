@@ -45,7 +45,8 @@ export default function PlayerFormPage() {
     <>
       <PageHeader title={player ? `Edit ${player.username}` : 'New player'} />
       <ProblemAlert problem={problem} />
-      <Form method="post" className="col-lg-6" noValidate>
+      {/* Keyed by record: going from one edit URL to another must not keep the previous record's inputs. */}
+      <Form key={player?.id ?? 'new'} method="post" className="col-lg-6" noValidate>
         <FormField
           label="Username"
           name="username"
