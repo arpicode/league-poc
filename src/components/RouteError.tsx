@@ -1,9 +1,10 @@
-import { isRouteErrorResponse, Link, useRouteError } from 'react-router';
+import { isRouteErrorResponse, Link, useLocation, useRouteError } from 'react-router';
 import { ApiError } from '../api/client';
 import { ProblemAlert } from './ProblemAlert';
 
 export function RouteError() {
   const error = useRouteError();
+  const location = useLocation();
 
   if (
     (error instanceof ApiError && error.status === 404) ||
@@ -27,7 +28,10 @@ export function RouteError() {
     <div className="py-4">
       <h1 className="h3">Something went wrong</h1>
       <ProblemAlert problem={problem} />
-      <Link to=".">Try again</Link>
+      {/* The boundary sits on a pathless route, so "." would resolve to "/": retry the failed URL itself. */}
+      <Link to={location} replace>
+        Try again
+      </Link>
     </div>
   );
 }
