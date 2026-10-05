@@ -59,7 +59,7 @@ Server-side validation is the source of truth: forms do light client-side checks
 `errors[].field` back onto inputs (`is-invalid` + `invalid-feedback`).
 
 ## Progress
-- [x] 1 Git bootstrap (local; push blocked: Claude GitHub App has no access to the repo yet)
+- [x] 1 Git bootstrap: `master` and default `develop` created on GitHub; work rebased onto them
 - [x] 2 Scaffold · [x] 3 Bootstrap SCSS · [x] 4 API layer · [x] 5–7 Features + tests (31 tests)
 - [x] 8 Docker (image built, nginx SPA fallback and `/api` proxy checked against the real API)
 - [x] 9 CI workflow · [x] 10 README
