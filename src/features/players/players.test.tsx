@@ -70,7 +70,7 @@ describe('players', () => {
 
     expect(await screen.findByText('Username must be between 3 and 50 characters')).toBeInTheDocument();
     expect(screen.getByLabelText('Username')).toHaveClass('is-invalid');
-    expect(screen.getByRole('alert')).toHaveTextContent('Request validation failed');
+    expect(screen.getByRole('alert')).toHaveTextContent('Please correct the highlighted fields.');
   });
 
   it('prefills the edit form and updates the player', async () => {
