@@ -1,0 +1,12 @@
+name: league-poc
+
+services:
+  web:
+    build: .
+    ports:
+      - '5173:80'
+    environment:
+      # The API running on the host (./mvnw spring-boot:run in league-api).
+      API_URL: ${API_URL:-http://host.docker.internal:8080}
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
