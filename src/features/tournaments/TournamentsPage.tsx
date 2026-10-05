@@ -4,10 +4,13 @@ import { PageHeader } from '../../components/PageHeader';
 import { Pager } from '../../components/Pager';
 import { StatusBadge } from '../../components/StatusBadge';
 import { formatDate } from '../../lib/format';
-import { pageQueryFrom } from '../../lib/forms';
+import { pageQueryFrom, redirectPastLastPage } from '../../lib/forms';
 
-export function loader({ request }: LoaderFunctionArgs) {
-  return tournamentsApi.list(pageQueryFrom(request.url), request.signal);
+export async function loader({ request }: LoaderFunctionArgs) {
+  return redirectPastLastPage(
+    request.url,
+    await tournamentsApi.list(pageQueryFrom(request.url), request.signal),
+  );
 }
 
 export default function TournamentsPage() {

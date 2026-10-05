@@ -3,10 +3,13 @@ import { boardGamesApi } from '../../api/boardGames';
 import { ConfirmButton } from '../../components/ConfirmButton';
 import { PageHeader } from '../../components/PageHeader';
 import { Pager } from '../../components/Pager';
-import { pageQueryFrom } from '../../lib/forms';
+import { pageQueryFrom, redirectPastLastPage } from '../../lib/forms';
 
-export function loader({ request }: LoaderFunctionArgs) {
-  return boardGamesApi.list(pageQueryFrom(request.url), request.signal);
+export async function loader({ request }: LoaderFunctionArgs) {
+  return redirectPastLastPage(
+    request.url,
+    await boardGamesApi.list(pageQueryFrom(request.url), request.signal),
+  );
 }
 
 export default function BoardGamesPage() {

@@ -1,4 +1,4 @@
-import type { PageQuery, ProblemDetail } from './types';
+import type { Page, PageQuery, ProblemDetail } from './types';
 
 export const API_BASE = '/api/v1';
 
@@ -83,4 +83,16 @@ export function toQueryString({ page, size, sort }: PageQuery = {}): string {
   const query = params.toString();
 
   return query ? `?${query}` : '';
+}
+
+const FETCH_ALL_PAGE_SIZE = 1000;
+
+/** Every item of a paginated listing, page after page: select inputs and roster counts need all of them. */
+export async function fetchAll<T>(fetchPage: (query: PageQuery) => Promise<Page<T>>): Promise<T[]> {
+  const items: T[] = [];
+  for (let page = 0; ; page++) {
+    const result = await fetchPage({ page, size: FETCH_ALL_PAGE_SIZE });
+    items.push(...result.content);
+    if (page + 1 >= result.page.totalPages) return items;
+  }
 }

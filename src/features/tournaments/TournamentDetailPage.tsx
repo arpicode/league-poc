@@ -7,6 +7,7 @@ import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
 } from 'react-router';
+import { fetchAll } from '../../api/client';
 import { playersApi } from '../../api/players';
 import { isTerminal, NEXT_STATUSES, registrationsApi, tournamentsApi } from '../../api/tournaments';
 import { TOURNAMENT_STATUSES, type TournamentStatus } from '../../api/types';
@@ -15,18 +16,19 @@ import { PageHeader } from '../../components/PageHeader';
 import { ProblemAlert } from '../../components/ProblemAlert';
 import { StatusBadge } from '../../components/StatusBadge';
 import { formatDate, formatDateTime } from '../../lib/format';
-import { ALL, idParam, numberOrNull, text, toActionResult } from '../../lib/forms';
+import { idParam, numberOrNull, text, toActionResult } from '../../lib/forms';
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const id = idParam(params.id);
-  // The whole roster is loaded at once: the confirmed count and the "already registered" filter need all of it.
+  const { signal } = request;
+  // The whole roster is loaded: the confirmed count and the "already registered" filter need all of it.
   const [tournament, registrations, players] = await Promise.all([
-    tournamentsApi.get(id, request.signal),
-    registrationsApi.list(id, ALL, request.signal),
-    playersApi.list(ALL, request.signal),
+    tournamentsApi.get(id, signal),
+    fetchAll((query) => registrationsApi.list(id, query, signal)),
+    fetchAll((query) => playersApi.list(query, signal)),
   ]);
 
-  return { tournament, registrations: registrations.content, players: players.content };
+  return { tournament, registrations, players };
 }
 
 const TRANSITION_LABELS: Record<TournamentStatus, string> = {

@@ -1,5 +1,6 @@
+import { redirect } from 'react-router';
 import { ApiError } from '../api/client';
-import type { PageQuery, ProblemDetail } from '../api/types';
+import type { Page, PageQuery, ProblemDetail } from '../api/types';
 
 /** Trimmed text field; empty becomes null so the API applies its own "blank" rules. */
 export function textOrNull(form: FormData, name: string): string | null {
@@ -65,5 +66,17 @@ export function pageQueryFrom(url: URL | string, size = DEFAULT_PAGE_SIZE): Page
   return { page: Number.isInteger(page) && page > 0 ? page - 1 : 0, size };
 }
 
-// Select inputs need every option, not one page. Spring's default max page size is 2000.
-export const ALL = { size: 1000 } satisfies PageQuery;
+/**
+ * A URL page past the last one (e.g. after deleting the only item of the last page) is sent to the last
+ * page instead of showing an empty list without pagination.
+ */
+export function redirectPastLastPage<T>(url: string, page: Page<T>): Page<T> {
+  const { number, totalPages } = page.page;
+  if (totalPages > 0 && number >= totalPages) {
+    const target = new URL(url);
+    target.searchParams.set('page', String(totalPages));
+    throw redirect(`${target.pathname}${target.search}`);
+  }
+
+  return page;
+}
