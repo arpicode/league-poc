@@ -37,7 +37,7 @@ sets where `/api` is forwarded.
 | `pnpm dev`       | Dev server with hot reload                   |
 | `pnpm build`     | Type-check, then build into `dist/`          |
 | `pnpm preview`   | Serve the build (with the same `/api` proxy) |
-| `pnpm test`      | Vitest in watch mode                         |
+| `pnpm test`      | Vitest once                                  |
 | `pnpm test:run`  | Vitest once (CI)                             |
 | `pnpm coverage`  | Tests with a coverage report                 |
 | `pnpm lint`      | ESLint                                       |

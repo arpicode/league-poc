@@ -1,7 +1,8 @@
 import { http, HttpResponse } from 'msw';
 import { server } from '../test/server';
 import { api } from '../test/utils';
-import { ApiError, request, toQueryString } from './client';
+import { ApiError, fetchAll, request, toQueryString } from './client';
+import type { Page } from './types';
 
 describe('request', () => {
   it('returns the parsed JSON body', async () => {
@@ -74,5 +75,45 @@ describe('toQueryString', () => {
     expect(toQueryString()).toBe('');
     expect(toQueryString({ page: 0, size: 20 })).toBe('?page=0&size=20');
     expect(toQueryString({ sort: 'name,desc' })).toBe('?sort=name%2Cdesc');
+  });
+});
+
+describe('fetchAll', () => {
+  it('requests every page and joins their content', async () => {
+    const requested: string[] = [];
+    server.use(
+      http.get(api('/players'), ({ request: req }) => {
+        const params = new URL(req.url).searchParams;
+        requested.push(params.toString());
+        const number = Number(params.get('page'));
+        return HttpResponse.json({
+          content: [{ id: number + 1 }],
+          page: { size: 1000, number, totalElements: 1001, totalPages: 2 },
+        });
+      }),
+    );
+
+    const items = await fetchAll((query) => request<Page<{ id: number }>>(`/players${toQueryString(query)}`));
+
+    expect(items).toEqual([{ id: 1 }, { id: 2 }]);
+    expect(requested).toEqual(['page=0&size=1000', 'page=1&size=1000']);
+  });
+
+  it('stops after one request for an empty listing', async () => {
+    let calls = 0;
+    server.use(
+      http.get(api('/players'), () => {
+        calls++;
+        return HttpResponse.json({
+          content: [],
+          page: { size: 1000, number: 0, totalElements: 0, totalPages: 0 },
+        });
+      }),
+    );
+
+    await expect(
+      fetchAll((query) => request<Page<unknown>>(`/players${toQueryString(query)}`)),
+    ).resolves.toEqual([]);
+    expect(calls).toBe(1);
   });
 });
